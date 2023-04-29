@@ -14,7 +14,7 @@ How to:
 
     - Advanced 
 
-        - [Logger] has 4 versions of a Setup method
+        - `[Logger]` has 4 versions of a Setup method
 
             - User provides a custom logging folder path, enables/disables appended logs, and sets file Roll Over size
 
@@ -30,13 +30,13 @@ How to:
 
                 - Previous setup method is called setting custom logging folder path to a default %temp%\Logger path under each user's profile
 
-                - while this method CAN be called it is unnecessary as it is called automatically when [Logger] is first initialized
+                - while this method CAN be called it is unnecessary as it is called automatically when any of `[Logger]`'s "Write" methods is first called
 
         - **Warning** Setup should only be run ONCE at the beginning of a script or not at all if the default %temp%\Logger location is sufficient. Calling setup does NOT affect existing in memory Log instances only newly created ones. 
 
 - Writing to Log
 
-    - [Logger] Writes ALL log lines regardless of the method call below using the MEMCM style log format which leverages the CMTrace.exe advanced log viewing capabilities. It populates the following.
+    - `[Logger]` Writes ALL log lines regardless of the method call below using the MEMCM style log format which leverages the CMTrace.exe advanced log viewing capabilities. It populates the following.
 
         - Time
 
@@ -48,43 +48,43 @@ How to:
         
         - File - Caller Function Name (row,column)
 
-    - [Logger] exposes 8 (4 pair) static methods for writing to a log
+    - `[Logger]` exposes 8 (4 pair) static methods for writing to a log
 
-        - ::Verbose([string])
-
-            - Writes a simple non color highlighted string to the log
-
-        - ::Verbose([string],[object])
-
-            - Writes a simple non color highlighted string and data object (output as JSON) to the log
-
-        - ::Information([string])
+        - `::Verbose([string])`
 
             - Writes a simple non color highlighted string to the log
 
-        - ::Information([string],[object])
+        - `::Verbose([string],[object])`
 
             - Writes a simple non color highlighted string and data object (output as JSON) to the log
 
-        - ::Warning([string])
+        - `::Information([string])`
+
+            - Writes a simple non color highlighted string to the log
+
+        - `::Information([string],[object])`
+
+            - Writes a simple non color highlighted string and data object (output as JSON) to the log
+
+        - `::Warning([string])`
 
             - Writes a yellow color highlighted string to the log
 
                 - Color is based on setting Type number NOT on parsed keywords
 
-        - ::Warning([string],[object])
+        - `::Warning([string],[object])`
 
             - Writes a yellow color highlighted string and data object (output as JSON) to the log
 
                 - Color is based on setting Type number NOT on parsed keywords
 
-        - ::Error([string])
+        - `::Error([string])`
 
             - Writes a red color highlighted string to the log
 
                 - Color is based on setting Type number NOT on parsed keywords
 
-        - ::Error([string],[object])
+        - `::Error([string],[object])`
 
             - Writes a red color highlighted string and data object (output as JSON) to the log
 
@@ -92,14 +92,14 @@ How to:
 
     - Examples
 
-        - [Logger]::Information('This is a note')
+        - `[Logger]::Information('This is a note')`
 
-        - [Logger]::Error('Could not install App',$AppDetails)
+        - `[Logger]::Error('Could not install App',$AppDetails)`
 
-        - [Logger]::Warning('Cannot connect wil reattempt')
+        - `[Logger]::Warning('Cannot connect wil reattempt')`
 
         - |_ Main.ps1 _|
-            
+            ```
             using module Logger
 
             . .\Child1.ps1
@@ -115,25 +115,25 @@ How to:
             }
 
             main
-
+            ```
           |_ Child1.ps1 _|
+            ```
+            function Call-Child1 {
+               [LogFamily(Family='Other Childrem',Path='Children')]
+               param()
 
-             function Call-Child1 {
-                [LogFamily(Family='Other Childrem',Path='Children')]
-                param()
-
-                [Logger]::Information('Run Child1')
-             }
-
+               [Logger]::Information('Run Child1')
+            }
+            ```
           |_ Child2.ps1 _|
+            ```
+            function Call-Child2 {
+               [LogFamily(Family='Kids',Path='C:\Children')]
+               param()
 
-             function Call-Child2 {
-                [LogFamily(Family='Kids',Path='C:\Children')]
-                param()
-
-                [Logger]::Information('Run Child2')
-             }
-
+               [Logger]::Information('Run Child2')
+            }
+            ```
             - Logs to:
 
                 - Main.Log (in main logging folder)
@@ -164,19 +164,19 @@ How to:
 
     - Family Logs group in call order logs writting to individual logs capturing log source as well
 
-    - Family Logs are applied via [LogFamily()] attributes placed above ANY ScriptBlock's param keyword (much like [CmdletBinding()])
+    - Family Logs are applied via `[LogFamily()]` attributes placed above ANY ScriptBlock's param keyword (much like `[CmdletBinding()]`)
 
-    - Multiple [LogFamily()] attributes can be applied to a single param()
+    - Multiple `[LogFamily()]` attributes can be applied to a single param()
 
-    - All [LogFamily()] attributes are called within the Call Stack from Ancestors to Dependents order
+    - All `[LogFamily()]` attributes are called within the Call Stack in Ancestors to Dependents order
 
-        - All child function calls with calls to logger even in other files will automatically group around its ancestor's [LogFamily()] attribute(s) regardless of having a [LogFamily()] attribute declared
+        - All child function calls with calls to logger even in other files will automatically group around its ancestor's `[LogFamily()]` attribute(s) regardless of having a `[LogFamily()]` attribute declared
 
         - Parent Attribute beats out children's attributes if Family is named the same
 
     - Parameters
 
-        - A [LogFamily()] attribute has two named parameters
+        - A `[LogFamily()]` attribute has two named parameters
 
             - Family 
 
@@ -201,17 +201,23 @@ How to:
                         - Family Log is created in the Path provided
     - Examples
 
-        - [LogFamily(Family='The Family')]
+        - ```
+          [LogFamily(Family='The Family')]
           param()
+          ```
 
-        - [LogFamily(Family='The Family', Path='Family')]
+        - ```
+          [LogFamily(Family='The Family', Path='Family')]
           param()
+          ```
 
-        - [LogFamily(Family='The Family', Path = 'C:\Family')]
+        - ```
+          [LogFamily(Family='The Family', Path = 'C:\Family')]
           param()
+          ```
 
         - |_ Main.ps1 _|
-            
+            ```
             using module Logger
 
             . .\Child1.ps1
@@ -227,25 +233,25 @@ How to:
             }
 
             main
-
+            ```
           |_ Child1.ps1 _|
-
+             ```
              function Call-Child1 {
                 [LogFamily(Family='Other Childrem',Path='Children')]
                 param()
 
                 [Logger]::Information('Run Child1')
              }
-
+             ```
           |_ Child2.ps1 _|
-
+             ```
              function Call-Child2 {
                 [LogFamily(Family='Kids',Path='C:\Children')]
                 param()
 
                 [Logger]::Information('Run Child2')
              }
-
+            ```
             - Logs to:
 
                 - Main.Log (in main logging folder)
